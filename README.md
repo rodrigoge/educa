@@ -24,7 +24,7 @@ A brief summary about technologies and tools used to build this application:
 - [GitHub](https://github.com/)
 
 ### 📂 Docs
-Click [here](https://github.com/rodrigoge/educa/docs/) to open documentation folder of this project.
+Click [here](https://github.com/rodrigoge/educa/tree/main/docs) to open documentation folder of this project.
 
 ### 📝 License used
 This project is intended to be free and open source for anyone to use. Therefore, this license is MIT, to check more click on [this link](https://github.com/rodrigoge/educa/blob/main/LICENSE).
