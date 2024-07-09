@@ -3,12 +3,16 @@ package br.com.api.educa.userservice.services;
 import br.com.api.educa.userservice.db.UserRepository;
 import br.com.api.educa.userservice.dto.UserRequest;
 import br.com.api.educa.userservice.dto.UserResponse;
+import br.com.api.educa.userservice.exception.FlowException;
 import br.com.api.educa.userservice.mappers.UserMapper;
 import br.com.api.educa.userservice.utils.Utils;
 import br.com.api.educa.userservice.validators.UserValidator;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @Log4j2
@@ -32,7 +36,12 @@ public class UserService {
         log.info("Mapping request to valid object");
         var user = userMapper.toUsers(userRequest);
         log.info("Validating user password");
-        userValidator.hasPasswordValid(user.getPassword());
+        if (!userValidator.hasPasswordValid(user.getPassword()))
+            throw new FlowException(
+                    HttpStatus.BAD_REQUEST,
+                    LocalDateTime.now(),
+                    "Password must have at least 4 letters and 4 numbers"
+            );
         log.info("Encrypting user password");
         utils.encryptPassword(user);
         log.info("Saving user in database");
