@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,5 +40,14 @@ public class UsersController {
         var response = userService.deleteUser(userId);
         log.info("UserController.deleteUser - finishing flow");
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<UserResponse> updateUser(@PathVariable UUID userId,
+                                                   @Valid @RequestBody UserRequest userRequest) {
+        log.info("UserController.updateUser - starting flow");
+        var response = userService.updateUser(userId, userRequest);
+        log.info("UserController.updateUser - finishing flow");
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
