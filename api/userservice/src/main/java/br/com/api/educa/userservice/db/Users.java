@@ -9,10 +9,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
+import lombok.Data;
 
 import java.util.Set;
 import java.util.UUID;
 
+@Data
 @Entity
 @Table(name = "users")
 public class Users {
