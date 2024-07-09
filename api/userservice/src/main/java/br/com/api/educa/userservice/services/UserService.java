@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @Log4j2
@@ -60,5 +61,19 @@ public class UserService {
         if (!userRequest.password().isEmpty()) userValidator.hasFieldValid(userRequest.password());
         if (!userRequest.profile().name().isEmpty()) userValidator.hasFieldValid(userRequest.profile().name());
         log.info("UserService.validateUserFields - finishing flow");
+    }
+
+    public String deleteUser(UUID userId) {
+        log.info("UserService.deleteUser - entering flow");
+        var user = userRepository.findById(userId);
+        if (user.isEmpty())
+            throw new FlowException(
+                    HttpStatus.BAD_REQUEST,
+                    LocalDateTime.now(),
+                    "This user doesn't exists"
+            );
+        userRepository.deleteById(userId);
+        log.info("UserService.deleteUser - finishing flow");
+        return "User has been deleted successfully";
     }
 }

@@ -8,10 +8,14 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
@@ -27,5 +31,13 @@ public class UsersController {
         var response = userService.createUser(userRequest);
         log.info("UserController.createUser - finishing flow");
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<String> deleteUser(@PathVariable UUID userId) {
+        log.info("UserController.deleteUser - starting flow");
+        var response = userService.deleteUser(userId);
+        log.info("UserController.deleteUser - finishing flow");
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
