@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/login")
+@RequestMapping("/auth")
 @Log4j2
 public class LoginController {
 
     @Autowired
     private LoginService loginService;
 
-    @PostMapping
+    @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         log.info("LoginController.login - starting flow");
         var response = loginService.login(loginRequest);

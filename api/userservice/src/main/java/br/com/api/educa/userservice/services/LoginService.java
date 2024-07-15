@@ -3,6 +3,7 @@ package br.com.api.educa.userservice.services;
 import br.com.api.educa.userservice.db.Users;
 import br.com.api.educa.userservice.dto.LoginRequest;
 import br.com.api.educa.userservice.dto.LoginResponse;
+import br.com.api.educa.userservice.utils.Utils;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import lombok.extern.log4j.Log4j2;
@@ -19,13 +20,17 @@ import java.time.temporal.ChronoUnit;
 @Log4j2
 public class LoginService {
 
-    private final AuthenticationManager authenticationManager;
+
     @Value("${jwt.secret}")
     private String secret;
 
+    private final AuthenticationManager authenticationManager;
+    private final Utils utils;
+
     @Autowired
-    public LoginService(AuthenticationManager authenticationManager) {
+    public LoginService(AuthenticationManager authenticationManager, Utils utils) {
         this.authenticationManager = authenticationManager;
+        this.utils = utils;
     }
 
     public LoginResponse login(LoginRequest loginRequest) {
@@ -62,11 +67,7 @@ public class LoginService {
 
     public String verifyToken(String token) {
         log.info("TokenService.verifyToken - entering flow");
-        var validatedToken = JWT
-                .require(Algorithm.HMAC256(secret))
-                .build()
-                .verify(token)
-                .getSubject();
+        var validatedToken = utils.verifyToken(token, secret);
         log.info("TokenService.verifyToken - finishing flow");
         return validatedToken;
     }
