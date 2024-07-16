@@ -9,6 +9,7 @@ public record UserResponse(
         String email,
         String login,
         UserProfileTypeEnum profile,
-        Set<String> preferences
+        Set<String> preferences,
+        String bio
 ) {
 }

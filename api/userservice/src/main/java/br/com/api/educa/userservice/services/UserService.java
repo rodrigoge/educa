@@ -131,6 +131,7 @@ public class UserService {
         if (!userRequest.password().isEmpty()) user.setPassword(userRequest.password());
         if (userRequest.profile() != null) user.setProfile(userRequest.profile());
         if (userRequest.preferences() != null) user.setPreferences(userRequest.preferences());
+        if (userRequest.bio() != null) user.setBio(userRequest.bio());
         log.info("UserService.mappingUserUpdate - finishing flow");
         return user;
     }

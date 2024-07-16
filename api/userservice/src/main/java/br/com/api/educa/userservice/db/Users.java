@@ -47,6 +47,9 @@ public class Users implements UserDetails {
     @Column
     private Set<String> preferences;
 
+    @Column
+    private String bio;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();

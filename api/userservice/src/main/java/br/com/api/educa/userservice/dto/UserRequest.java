@@ -10,6 +10,7 @@ public record UserRequest(
         String login,
         String password,
         UserProfileTypeEnum profile,
-        Set<String> preferences
+        Set<String> preferences,
+        String bio
 ) {
 }
