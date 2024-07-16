@@ -5,9 +5,7 @@ import br.com.api.educa.userservice.exception.FlowException;
 import br.com.api.educa.userservice.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -19,17 +17,19 @@ import java.time.LocalDateTime;
 
 @Service
 @Log4j2
-@RequiredArgsConstructor
 public class LogoutService implements LogoutHandler {
 
     @Value("${jwt.secret}")
     private String secret;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final Utils utils;
 
-    @Autowired
-    private Utils utils;
+    public LogoutService(UserRepository userRepository,
+                         Utils utils) {
+        this.userRepository = userRepository;
+        this.utils = utils;
+    }
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {

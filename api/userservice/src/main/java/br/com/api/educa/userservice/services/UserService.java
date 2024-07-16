@@ -18,7 +18,6 @@ import jakarta.persistence.criteria.Root;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -31,20 +30,23 @@ import java.util.UUID;
 @Log4j2
 public class UserService {
 
-    @Autowired
-    private UserValidator userValidator;
+    private final UserValidator userValidator;
+    private final UserMapper userMapper;
+    private final UserRepository userRepository;
+    private final Utils utils;
+    private final EntityManager entityManager;
 
-    @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private Utils utils;
-
-    @Autowired
-    private EntityManager entityManager;
+    public UserService(UserValidator userValidator,
+                       UserMapper userMapper,
+                       UserRepository userRepository,
+                       Utils utils,
+                       EntityManager entityManager) {
+        this.userValidator = userValidator;
+        this.userMapper = userMapper;
+        this.userRepository = userRepository;
+        this.utils = utils;
+        this.entityManager = entityManager;
+    }
 
     public UserResponse createUser(UserRequest userRequest) {
         log.info("UserService.createUser - starting flow");

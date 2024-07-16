@@ -4,7 +4,6 @@ import br.com.api.educa.userservice.db.Users;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -12,8 +11,11 @@ import org.springframework.stereotype.Component;
 @Log4j2
 public class Utils {
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+
+    public Utils(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public void encryptPassword(Users user) {
         log.info("Utils.encryptPassword - entering flow");

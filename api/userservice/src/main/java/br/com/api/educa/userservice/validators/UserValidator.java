@@ -3,7 +3,6 @@ package br.com.api.educa.userservice.validators;
 import br.com.api.educa.userservice.exception.FlowException;
 import br.com.api.educa.userservice.utils.Utils;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -14,8 +13,11 @@ import java.util.regex.Pattern;
 @Log4j2
 public class UserValidator {
 
-    @Autowired
-    private Utils utils;
+    private final Utils utils;
+
+    public UserValidator(Utils utils) {
+        this.utils = utils;
+    }
 
     public void hasFieldValid(String field) {
         log.info("UserValidator.isFieldValid - entering flow");
