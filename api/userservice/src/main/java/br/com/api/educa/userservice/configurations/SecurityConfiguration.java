@@ -31,11 +31,6 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,
                                                    UserRepository userRepository,
                                                    LoginService loginService) throws Exception {

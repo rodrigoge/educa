@@ -2,18 +2,29 @@ package br.com.api.educa.userservice.services;
 
 import br.com.api.educa.userservice.db.UserRepository;
 import br.com.api.educa.userservice.db.Users;
+import br.com.api.educa.userservice.dto.GetUsersRequest;
+import br.com.api.educa.userservice.dto.GetUsersResponse;
 import br.com.api.educa.userservice.dto.UserRequest;
 import br.com.api.educa.userservice.dto.UserResponse;
 import br.com.api.educa.userservice.exception.FlowException;
 import br.com.api.educa.userservice.mappers.UserMapper;
 import br.com.api.educa.userservice.utils.Utils;
 import br.com.api.educa.userservice.validators.UserValidator;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -31,6 +42,9 @@ public class UserService {
 
     @Autowired
     private Utils utils;
+
+    @Autowired
+    private EntityManager entityManager;
 
     public UserResponse createUser(UserRequest userRequest) {
         log.info("UserService.createUser - starting flow");
@@ -117,5 +131,81 @@ public class UserService {
         if (userRequest.preferences() != null) user.setPreferences(userRequest.preferences());
         log.info("UserService.mappingUserUpdate - finishing flow");
         return user;
+    }
+
+    public GetUsersResponse getUsers(GetUsersRequest usersRequest) {
+        log.info("UserService.getUsers - entering");
+        var criteriaBuilder = entityManager.getCriteriaBuilder();
+        var criteriaQuery = criteriaBuilder.createQuery(Users.class);
+        var root = criteriaQuery.from(Users.class);
+        var predicates = buildPredicates(usersRequest, criteriaBuilder, root);
+        criteriaQuery.where(predicates.toArray(new Predicate[0]));
+        addSortAndOrderUsers(usersRequest, criteriaQuery, criteriaBuilder, root);
+        var typedQuery = entityManager.createQuery(criteriaQuery);
+        typedQuery.setFirstResult(usersRequest.offset());
+        typedQuery.setMaxResults(usersRequest.limit());
+        var usersResponse = typedQuery.getResultList();
+        var users = buildUsers(usersResponse);
+        log.info("UserService.getUsers - exiting");
+        return new GetUsersResponse(users, users.size());
+    }
+
+    private List<Predicate> buildPredicates(GetUsersRequest usersRequest,
+                                            CriteriaBuilder criteriaBuilder,
+                                            Root<Users> root) {
+        log.info("UserService.buildPredicates - entering");
+        List<Predicate> predicates = new ArrayList<>();
+        if (StringUtils.isNotBlank(usersRequest.name())) {
+            predicates.add(criteriaBuilder.like(
+                    criteriaBuilder.lower(root.get("name")),
+                    "%" + usersRequest.name() + "%"
+            ));
+        }
+        if (StringUtils.isNotBlank(usersRequest.email())) {
+            predicates.add(criteriaBuilder.like(
+                    criteriaBuilder.lower(root.get("email")),
+                    "%" + usersRequest.email() + "%"
+            ));
+        }
+        if (StringUtils.isNotBlank(usersRequest.login())) {
+            predicates.add(criteriaBuilder.like(
+                    criteriaBuilder.lower(root.get("login")),
+                    "%" + usersRequest.login() + "%"
+            ));
+        }
+        if (ObjectUtils.isNotEmpty(usersRequest.profile())) {
+            predicates.add(criteriaBuilder.like(
+                    criteriaBuilder.lower(root.get("profile")),
+                    "%" + usersRequest.profile().name() + "%"
+            ));
+        }
+        if (ObjectUtils.isNotEmpty(usersRequest.preferences())) {
+            predicates.add(criteriaBuilder.like(
+                    criteriaBuilder.lower(root.get("preferences")),
+                    "%" + usersRequest.preferences() + "%"
+            ));
+        }
+        log.info("UserService.buildPredicates - finishing");
+        return predicates;
+    }
+
+    private List<UserResponse> buildUsers(List<Users> users) {
+        return users
+                .stream()
+                .map(userMapper::toUserResponse)
+                .toList();
+    }
+
+    private void addSortAndOrderUsers(GetUsersRequest usersRequest,
+                                      CriteriaQuery<Users> criteriaQuery,
+                                      CriteriaBuilder criteriaBuilder,
+                                      Root<Users> root) {
+        if (StringUtils.isNotBlank(usersRequest.sort().name())) {
+            if ("desc".equalsIgnoreCase(usersRequest.order().name())) {
+                criteriaQuery.orderBy(criteriaBuilder.desc(root.get(usersRequest.sort().name().toLowerCase())));
+            } else {
+                criteriaQuery.orderBy(criteriaBuilder.asc(root.get(usersRequest.sort().name().toLowerCase())));
+            }
+        }
     }
 }
